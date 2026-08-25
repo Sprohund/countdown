@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Counting down to you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Caveat:wght@500;600&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dusk-deep: #241a35;
+    --twilight: #3c2c56;
+    --plum-glow: #6a4a78;
+    --amber-glow: #ffb35c;
+    --gold-light: #ffdd9a;
+    --blush: #ff9eb0;
+    --cream: #fff6e9;
+    --paper: #f6ead2;
+    --paper-ink: #4a3728;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0;
+    padding:0;
+    min-height:100vh;
+    background: linear-gradient(180deg, var(--dusk-deep) 0%, var(--twilight) 45%, var(--plum-glow) 100%);
+    color: var(--cream);
+    font-family: 'Quicksand', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ---------- ambient sky layer ---------- */
+  #sky{
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .star{
+    position: absolute;
+    border-radius: 50%;
+    background: var(--cream);
+    animation: twinkle 4s ease-in-out infinite;
+  }
+
+  @keyframes twinkle{
+    0%, 100% { opacity: .15; }
+    50% { opacity: .9; }
+  }
+
+  .firefly{
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold-light);
+    box-shadow: 0 0 6px 2px rgba(255, 221, 154, .8), 0 0 14px 6px rgba(255, 179, 92, .35);
+    animation: drift 9s ease-in-out infinite;
+  }
+
+  @keyframes drift{
+    0%   { transform: translate(0, 0); opacity: 0; }
+    15%  { opacity: .9; }
+    50%  { transform: translate(12px, -60px); opacity: .6; }
+    85%  { opacity: .8; }
+    100% { transform: translate(-8px, -130px); opacity: 0; }
+  }
+
+  /* ---------- garland ---------- */
+  .garland{
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0 4vw;
+    height: 46px;
+    margin-top: 6px;
+  }
+
+  .bulb-wire{
+    width: 1px;
+    background: rgba(255,246,233,.25);
+  }
+  .bulb-wire.short{ height: 10px; }
+  .bulb-wire.mid{ height: 20px; }
+  .bulb-wire.long{ height: 30px; }
+
+  .bulb{
+    width: 8px;
+    height: 8px;
+    margin-left: -3.5px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--gold-light), var(--amber-glow) 60%, #c9761f 100%);
+    box-shadow: 0 0 8px 2px rgba(255, 179, 92, .8);
+    animation: bulb-glow 3.2s ease-in-out infinite;
+  }
+
+  @keyframes bulb-glow{
+    0%, 100% { opacity: .55; box-shadow: 0 0 6px 1px rgba(255,179,92,.5); }
+    50% { opacity: 1; box-shadow: 0 0 12px 4px rgba(255,179,92,.9); }
+  }
+
+  /* ---------- main content ---------- */
+  main{
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 4vh 24px 8vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .eyebrow{
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    font-size: .72rem;
+    color: var(--blush);
+    margin: 2.2rem 0 .9rem;
+  }
+
+  h1{
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    margin: 0 0 .6rem;
+    color: var(--cream);
+    text-shadow: 0 0 28px rgba(255, 179, 92, .25);
+    line-height: 1.15;
+  }
+
+  .subdate{
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--gold-light);
+    margin: 0 0 3rem;
+    letter-spacing: .02em;
+  }
+
+  /* ---------- countdown ---------- */
+  .countdown{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    width: 100%;
+    max-width: 560px;
+    margin-bottom: 3rem;
+  }
+
+  .lantern{
+    position: relative;
+    background: linear-gradient(180deg, rgba(255,246,233,.09), rgba(255,246,233,.03));
+    border: 1px solid rgba(255, 221, 154, .18);
+    border-radius: 18px;
+    padding: 1.4rem .4rem 1.1rem;
+    backdrop-filter: blur(2px);
+    animation: flicker 5s ease-in-out infinite;
+  }
+  .lantern:nth-child(2){ animation-delay: .6s; }
+  .lantern:nth-child(3){ animation-delay: 1.3s; }
+  .lantern:nth-child(4){ animation-delay: 2.1s; }
+
+  @keyframes flicker{
+    0%, 100% { box-shadow: 0 0 18px 2px rgba(255,179,92,.18); }
+    50% { box-shadow: 0 0 26px 6px rgba(255,179,92,.32); }
+  }
+
+  .lantern .num{
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    color: var(--gold-light);
+    text-shadow: 0 0 18px rgba(255, 213, 122, .55);
+    line-height: 1;
+  }
+
+  .lantern .unit{
+    display: block;
+    margin-top: .5rem;
+    font-size: .68rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: rgba(255, 246, 233, .6);
+  }
+
+  /* ---------- note card ---------- */
+  .note{
+    background: var(--paper);
+    color: var(--paper-ink);
+    max-width: 380px;
+    padding: 1.6rem 1.8rem 1.8rem;
+    border-radius: 3px;
+    transform: rotate(-2deg);
+    box-shadow: 0 14px 30px rgba(0,0,0,.35), 0 2px 0 rgba(0,0,0,.05);
+    transition: transform .35s ease;
+    position: relative;
+  }
+  .note::before{
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-3deg);
+    width: 46px;
+    height: 20px;
+    background: rgba(255, 158, 176, .55);
+    border: 1px solid rgba(255,158,176,.7);
+  }
+  .note:hover{ transform: rotate(-2deg) translateY(-4px); }
+
+  .note p{
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    line-height: 1.35;
+    margin: .3rem 0 0;
+  }
+
+  .note .signed{
+    display: block;
+    margin-top: .8rem;
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    color: #a24b5c;
+  }
+
+  footer{
+    margin-top: 3rem;
+    font-size: .82rem;
+    letter-spacing: .04em;
+    color: rgba(255, 246, 233, .55);
+  }
+
+  footer .heart{ color: var(--blush); }
+
+  .arrived{
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.6rem, 4.5vw, 2.2rem);
+    color: var(--gold-light);
+    padding: 2rem 0;
+  }
+
+  @media (max-width: 480px){
+    .countdown{ gap: 10px; }
+    .lantern{ padding: 1rem .2rem .9rem; border-radius: 14px; }
+    .garland .bulb-wire.long{ height: 22px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .star, .firefly, .bulb, .lantern{ animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="sky" aria-hidden="true"></div>
+
+<div class="garland" aria-hidden="true"></div>
+
+<main>
+  <p class="eyebrow">Countdown to</p>
+  <h1>Seeing You Again</h1>
+  <p class="subdate">September 5th, 2026</p>
+
+  <div class="countdown" id="countdown" aria-live="polite" aria-label="Time remaining until September 5th">
+    <div class="lantern"><span class="num" id="days">00</span><span class="unit">days</span></div>
+    <div class="lantern"><span class="num" id="hours">00</span><span class="unit">hours</span></div>
+    <div class="lantern"><span class="num" id="minutes">00</span><span class="unit">minutes</span></div>
+    <div class="lantern"><span class="num" id="seconds">00</span><span class="unit">seconds</span></div>
+  </div>
+
+  <div class="note">
+    <p>&ldquo;Set me as a seal upon thine heart&hellip; for love is strong as death&hellip; many waters cannot quench love, neither can the floods drown it.&rdquo;</p>
+    <span class="signed">Song of Solomon 8:6&ndash;7</span>
+  </div>
+
+  <footer><span class="heart">&#9825;</span> counting every second until you're in my arms again</footer>
+</main>
+
+<script>
+  // ---- target date: September 5th, 2026, local midnight ----
+  var target = new Date(2026, 8, 5, 8, 0, 0);
+
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function pad(n){ return String(n).padStart(2, '0'); }
+
+  function tick(){
+    var now = new Date();
+    var diff = target - now;
+
+    if (diff <= 0){
+      document.getElementById('countdown').innerHTML =
+        '<div class="arrived" style="grid-column: 1 / -1;">Today is the day. I&rsquo;ll see you soon. &#129293;</div>';
+      clearInterval(timer);
+      return;
+    }
+
+    var days = Math.floor(diff / 86400000);
+    var hours = Math.floor((diff % 86400000) / 3600000);
+    var minutes = Math.floor((diff % 3600000) / 60000);
+    var seconds = Math.floor((diff % 60000) / 1000);
+
+    document.getElementById('days').textContent = days;
+    document.getElementById('hours').textContent = pad(hours);
+    document.getElementById('minutes').textContent = pad(minutes);
+    document.getElementById('seconds').textContent = pad(seconds);
+  }
+
+  tick();
+  var timer = setInterval(tick, 1000);
+
+  // ---- garland bulbs ----
+  (function buildGarland(){
+    var garland = document.querySelector('.garland');
+    var lengths = ['short', 'mid', 'long', 'mid'];
+    var count = window.innerWidth < 480 ? 9 : 14;
+    for (var i = 0; i < count; i++){
+      var col = document.createElement('div');
+      col.style.display = 'flex';
+      col.style.flexDirection = 'column';
+      col.style.alignItems = 'center';
+
+      var wire = document.createElement('div');
+      wire.className = 'bulb-wire ' + lengths[i % lengths.length];
+
+      var bulb = document.createElement('div');
+      bulb.className = 'bulb';
+      bulb.style.animationDelay = (i * 0.35) + 's';
+
+      col.appendChild(wire);
+      col.appendChild(bulb);
+      garland.appendChild(col);
+    }
+  })();
+
+  // ---- stars ----
+  (function buildStars(){
+    var sky = document.getElementById('sky');
+    var count = window.innerWidth < 480 ? 30 : 55;
+    for (var i = 0; i < count; i++){
+      var s = document.createElement('div');
+      s.className = 'star';
+      var size = (Math.random() * 1.6 + 0.6).toFixed(2);
+      s.style.width = size + 'px';
+      s.style.height = size + 'px';
+      s.style.left = (Math.random() * 100) + 'vw';
+      s.style.top = (Math.random() * 70) + 'vh';
+      s.style.animationDelay = (Math.random() * 4) + 's';
+      s.style.animationDuration = (3 + Math.random() * 3) + 's';
+      sky.appendChild(s);
+    }
+  })();
+
+  // ---- fireflies ----
+  if (!reduceMotion){
+    (function buildFireflies(){
+      var sky = document.getElementById('sky');
+      var count = window.innerWidth < 480 ? 6 : 12;
+      for (var i = 0; i < count; i++){
+        var f = document.createElement('div');
+        f.className = 'firefly';
+        f.style.left = (Math.random() * 90 + 5) + 'vw';
+        f.style.top = (Math.random() * 30 + 60) + 'vh';
+        f.style.animationDelay = (Math.random() * 9) + 's';
+        f.style.animationDuration = (7 + Math.random() * 5) + 's';
+        sky.appendChild(f);
+      }
+    })();
+  }
+</script>
+
+</body>
+</html>
